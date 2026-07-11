@@ -2,7 +2,8 @@ import SwiftUI
 
 /// A horizontal row of usage rings — the layout circled in the reference
 /// screenshot (the iOS Batteries widget). Renders up to four connected
-/// providers, each with a caption showing percent used and reset time.
+/// providers, each with a caption showing **remaining** for every cap tier
+/// (e.g. "5h 99%" / "Wk 100%") and the soonest reset.
 struct UsageRingsView: View {
     let providers: [ProviderID]
     let snapshots: [ProviderID: UsageSnapshot]
@@ -25,6 +26,7 @@ struct UsageRingsView: View {
                             caption(for: provider)
                         }
                     }
+                    .frame(maxWidth: ringSize * 1.5)
                 }
             }
         }
@@ -34,32 +36,34 @@ struct UsageRingsView: View {
     private func caption(for provider: ProviderID) -> some View {
         let snapshot = snapshots[provider]
         VStack(spacing: 1) {
-            Text(primaryCaption(snapshot))
-                .font(.system(size: ringSize * 0.22, weight: .semibold))
-                .foregroundStyle(.primary)
-            Text(secondaryCaption(snapshot))
-                .font(.system(size: ringSize * 0.19))
-                .foregroundStyle(.secondary)
+            if let snapshot, snapshot.errorMessage != nil {
+                captionLine("!", "check sign-in")
+            } else if let snapshot, !snapshot.windows.isEmpty {
+                ForEach(snapshot.orderedWindows.prefix(2)) { window in
+                    captionLine("\(window.kind.shortLabel) \(window.percentRemaining)%",
+                                nil)
+                }
+            } else if snapshot != nil {
+                captionLine(provider.displayName, "connected")
+            } else {
+                captionLine("—", "tap to add")
+            }
         }
         .lineLimit(1)
         .minimumScaleFactor(0.6)
     }
 
-    private func primaryCaption(_ snapshot: UsageSnapshot?) -> String {
-        guard let snapshot else { return "—" }
-        if snapshot.errorMessage != nil { return "!" }
-        if !snapshot.hasWindow { return provider(snapshot).displayName }
-        return "\(snapshot.percentUsed)%"
+    @ViewBuilder
+    private func captionLine(_ primary: String, _ secondary: String?) -> some View {
+        Text(primary)
+            .font(.system(size: ringSize * 0.2, weight: .semibold))
+            .foregroundStyle(.primary)
+        if let secondary {
+            Text(secondary)
+                .font(.system(size: ringSize * 0.18))
+                .foregroundStyle(.secondary)
+        }
     }
-
-    private func secondaryCaption(_ snapshot: UsageSnapshot?) -> String {
-        guard let snapshot else { return "tap to add" }
-        if snapshot.errorMessage != nil { return "check key" }
-        if !snapshot.hasWindow { return "connected" }
-        return Formatting.shortReset(snapshot.resetsAt, now: now)
-    }
-
-    private func provider(_ snapshot: UsageSnapshot) -> ProviderID { snapshot.provider }
 }
 
 /// Placeholder shown when no providers are connected: greyed-out rings that

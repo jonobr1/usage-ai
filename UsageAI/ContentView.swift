@@ -23,7 +23,7 @@ final class UsageViewModel: ObservableObject {
     }
 
     func disconnect(_ id: ProviderID) {
-        KeychainStore.delete(account: id.keychainAccount)
+        CredentialStore.delete(id)
         UsageStore.markDisconnected(id)
         load()
         WidgetCenter.shared.reloadAllTimelines()
@@ -61,7 +61,7 @@ struct ContentView: View {
                 }
 
                 Section {
-                    Text("Rings show each provider's API rate-limit window: how much of the current token budget you've used and when it resets. Add the **Usage AI** widget to your Home Screen to see them at a glance. Google doesn't report a usage window, so its ring is shown as indeterminate.")
+                    Text("Each ring shows how much of your **most-depleted** cap is left; the caption lists every tier (5-hour and weekly). Sign in with each service to read its plan windows; an API key instead shows the API rate-limit window. Add the **Usage AI** widget to your Home Screen to see them at a glance.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -136,7 +136,13 @@ struct ProviderRow: View {
         guard let snapshot else { return "Connected" }
         if let error = snapshot.errorMessage { return error }
         if !snapshot.hasWindow { return "Connected · usage window not reported" }
-        return "\(snapshot.percentUsed)% used · \(Formatting.resetString(snapshot.resetsAt))"
+        let windows = snapshot.orderedWindows.prefix(2)
+            .map { "\($0.kind.shortLabel) \($0.percentRemaining)% left" }
+            .joined(separator: " · ")
+        if let reset = snapshot.primaryWindow?.resetsAt {
+            return "\(windows) · \(Formatting.resetString(reset))"
+        }
+        return windows
     }
 }
 

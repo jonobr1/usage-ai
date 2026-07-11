@@ -30,10 +30,10 @@ enum UsageRefresher {
     /// Refreshes a single provider. On failure, the previous snapshot is kept
     /// but annotated with the error so the ring can be muted rather than blank.
     static func refresh(_ id: ProviderID) async -> UsageSnapshot? {
-        guard let key = KeychainStore.read(account: id.keychainAccount) else { return nil }
+        guard let credential = await CredentialManager.resolve(id) else { return nil }
         let provider = UsageProviderFactory.provider(for: id)
         do {
-            return try await provider.fetchUsage(apiKey: key)
+            return try await provider.fetchUsage(credential: credential)
         } catch {
             var snapshot = UsageStore.snapshots()[id] ?? .empty(id)
             snapshot.errorMessage = (error as? LocalizedError)?.errorDescription

@@ -21,6 +21,20 @@ enum RateLimitParsing {
         return formatter.date(from: string)
     }
 
+    /// Parses a reset value that may be an RFC3339 timestamp, a Unix epoch in
+    /// seconds, or a Go-style duration — whichever the (undocumented) header uses.
+    static func flexibleDate(_ string: String) -> Date? {
+        if let date = date(string) { return date }
+        let trimmed = string.trimmingCharacters(in: .whitespaces)
+        if let epoch = Double(trimmed) {
+            // Heuristic: large values are absolute epoch seconds; small values
+            // are a relative number of seconds until reset.
+            return epoch > 10_000_000 ? Date(timeIntervalSince1970: epoch)
+                                      : Date().addingTimeInterval(epoch)
+        }
+        return duration(trimmed).map { Date().addingTimeInterval($0) }
+    }
+
     /// Parses Go-style durations such as "6ms", "1s", "2m59s", "1h2m3s"
     /// (the format OpenAI uses for its `x-ratelimit-reset-*` headers) and
     /// returns the total number of seconds.

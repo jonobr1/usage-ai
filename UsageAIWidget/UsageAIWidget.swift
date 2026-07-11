@@ -12,17 +12,15 @@ struct UsageEntry: TimelineEntry {
         date: Date(),
         providers: [.openai, .anthropic, .google],
         snapshots: [
-            .openai: UsageSnapshot(provider: .openai, fractionUsed: 0.32,
-                                   remainingTokens: 68_000, limitTokens: 100_000,
-                                   resetsAt: Date().addingTimeInterval(3600),
-                                   lastUpdated: Date(), errorMessage: nil),
-            .anthropic: UsageSnapshot(provider: .anthropic, fractionUsed: 0.71,
-                                      remainingTokens: 29_000, limitTokens: 100_000,
-                                      resetsAt: Date().addingTimeInterval(1500),
-                                      lastUpdated: Date(), errorMessage: nil),
-            .google: UsageSnapshot(provider: .google, fractionUsed: 0,
-                                   remainingTokens: nil, limitTokens: nil,
-                                   resetsAt: nil, lastUpdated: Date(), errorMessage: nil)
+            .openai: UsageSnapshot(provider: .openai, windows: [
+                UsageWindow(kind: .fiveHour, fractionUsed: 0.32, resetsAt: Date().addingTimeInterval(3600)),
+                UsageWindow(kind: .weekly, fractionUsed: 0.12, resetsAt: Date().addingTimeInterval(4 * 86400))
+            ], lastUpdated: Date(), errorMessage: nil),
+            .anthropic: UsageSnapshot(provider: .anthropic, windows: [
+                UsageWindow(kind: .fiveHour, fractionUsed: 0.71, resetsAt: Date().addingTimeInterval(1500)),
+                UsageWindow(kind: .weekly, fractionUsed: 0.40, resetsAt: Date().addingTimeInterval(3 * 86400))
+            ], lastUpdated: Date(), errorMessage: nil),
+            .google: UsageSnapshot(provider: .google, windows: [], lastUpdated: Date(), errorMessage: nil)
         ]
     )
 }
@@ -47,6 +45,7 @@ struct UsageProvider: TimelineProvider {
             // Refresh again shortly before the soonest window resets, but at
             // least every 15 minutes and at most hourly.
             let soonestReset = entry.snapshots.values
+                .flatMap { $0.windows }
                 .compactMap(\.resetsAt)
                 .filter { $0 > entry.date }
                 .min()
@@ -121,9 +120,11 @@ struct MediumUsageView: View {
 struct SmallUsageView: View {
     var entry: UsageEntry
 
+    /// The provider whose most-depleted window is closest to its cap.
     private var focus: ProviderID? {
         entry.providers.max { lhs, rhs in
-            (entry.snapshots[lhs]?.fractionUsed ?? 0) < (entry.snapshots[rhs]?.fractionUsed ?? 0)
+            (entry.snapshots[lhs]?.primaryWindow?.fractionUsed ?? 0)
+                < (entry.snapshots[rhs]?.primaryWindow?.fractionUsed ?? 0)
         }
     }
 
@@ -148,17 +149,23 @@ struct SmallUsageView: View {
     private func title(for provider: ProviderID) -> String {
         let snapshot = entry.snapshots[provider]
         if snapshot?.errorMessage != nil { return provider.displayName }
-        if snapshot?.hasWindow == true { return "\(snapshot?.percentUsed ?? 0)%" }
+        if let window = snapshot?.primaryWindow {
+            return "\(window.kind.shortLabel) \(window.percentRemaining)%"
+        }
         return provider.displayName
     }
 
     private func subtitle(for provider: ProviderID) -> String {
         let snapshot = entry.snapshots[provider]
-        if snapshot?.errorMessage != nil { return "check API key" }
-        if snapshot?.hasWindow == true {
-            return "\(provider.displayName) · \(Formatting.shortReset(snapshot?.resetsAt, now: entry.date))"
-        }
-        return "connected"
+        if snapshot?.errorMessage != nil { return "check sign-in" }
+        guard let snapshot, !snapshot.windows.isEmpty else { return "connected" }
+        // Show the other tier + reset of the primary tier.
+        let others = snapshot.orderedWindows
+            .filter { $0.kind != snapshot.primaryWindow?.kind }
+            .map { "\($0.kind.shortLabel) \($0.percentRemaining)%" }
+        let reset = Formatting.shortReset(snapshot.primaryWindow?.resetsAt, now: entry.date)
+        if let other = others.first { return "\(other) · resets \(reset)" }
+        return "resets \(reset)"
     }
 }
 

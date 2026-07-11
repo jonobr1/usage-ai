@@ -21,6 +21,12 @@
 		1A2B3C4D5E6F000000000318 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000108 /* Formatting.swift */; };
 		1A2B3C4D5E6F000000000319 /* RingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000109 /* RingView.swift */; };
 		1A2B3C4D5E6F00000000031A /* UsageRingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010A /* UsageRingsView.swift */; };
+		1A2B3C4D5E6F000000000303 /* WebAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000116 /* WebAuthenticator.swift */; };
+		1A2B3C4D5E6F00000000031B /* PKCE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010B /* PKCE.swift */; };
+		1A2B3C4D5E6F00000000031C /* OAuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010C /* OAuthToken.swift */; };
+		1A2B3C4D5E6F00000000031D /* OAuthConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010D /* OAuthConfig.swift */; };
+		1A2B3C4D5E6F00000000031E /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010E /* OAuthClient.swift */; };
+		1A2B3C4D5E6F00000000031F /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010F /* Credential.swift */; };
 		1A2B3C4D5E6F000000000320 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000113 /* Assets.xcassets */; };
 		1A2B3C4D5E6F000000000400 /* UsageAIWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000120 /* UsageAIWidgetBundle.swift */; };
 		1A2B3C4D5E6F000000000401 /* UsageAIWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000121 /* UsageAIWidget.swift */; };
@@ -35,6 +41,11 @@
 		1A2B3C4D5E6F000000000418 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000108 /* Formatting.swift */; };
 		1A2B3C4D5E6F000000000419 /* RingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000109 /* RingView.swift */; };
 		1A2B3C4D5E6F00000000041A /* UsageRingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010A /* UsageRingsView.swift */; };
+		1A2B3C4D5E6F00000000041B /* PKCE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010B /* PKCE.swift */; };
+		1A2B3C4D5E6F00000000041C /* OAuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010C /* OAuthToken.swift */; };
+		1A2B3C4D5E6F00000000041D /* OAuthConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010D /* OAuthConfig.swift */; };
+		1A2B3C4D5E6F00000000041E /* OAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010E /* OAuthClient.swift */; };
+		1A2B3C4D5E6F00000000041F /* Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F00000000010F /* Credential.swift */; };
 		1A2B3C4D5E6F000000000420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000124 /* Assets.xcassets */; };
 		1A2B3C4D5E6F000000000500 /* UsageAIWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F000000000021 /* UsageAIWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -77,6 +88,12 @@
 		1A2B3C4D5E6F000000000108 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F000000000109 /* RingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingView.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F00000000010A /* UsageRingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageRingsView.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F00000000010B /* PKCE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth/PKCE.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F00000000010C /* OAuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth/OAuthToken.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F00000000010D /* OAuthConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth/OAuthConfig.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F00000000010E /* OAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth/OAuthClient.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F00000000010F /* Credential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credential.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F000000000116 /* WebAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthenticator.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F000000000110 /* UsageAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageAIApp.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F000000000111 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A2B3C4D5E6F000000000112 /* ConnectProviderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProviderView.swift; sourceTree = "<group>"; };
@@ -132,6 +149,7 @@
 				1A2B3C4D5E6F000000000110 /* UsageAIApp.swift */,
 				1A2B3C4D5E6F000000000111 /* ContentView.swift */,
 				1A2B3C4D5E6F000000000112 /* ConnectProviderView.swift */,
+				1A2B3C4D5E6F000000000116 /* WebAuthenticator.swift */,
 				1A2B3C4D5E6F000000000113 /* Assets.xcassets */,
 				1A2B3C4D5E6F000000000115 /* UsageAI.entitlements */,
 			);
@@ -164,6 +182,11 @@
 				1A2B3C4D5E6F000000000108 /* Formatting.swift */,
 				1A2B3C4D5E6F000000000109 /* RingView.swift */,
 				1A2B3C4D5E6F00000000010A /* UsageRingsView.swift */,
+				1A2B3C4D5E6F00000000010F /* Credential.swift */,
+				1A2B3C4D5E6F00000000010B /* PKCE.swift */,
+				1A2B3C4D5E6F00000000010C /* OAuthToken.swift */,
+				1A2B3C4D5E6F00000000010D /* OAuthConfig.swift */,
+				1A2B3C4D5E6F00000000010E /* OAuthClient.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -271,6 +294,12 @@
 				1A2B3C4D5E6F000000000300 /* UsageAIApp.swift in Sources */,
 				1A2B3C4D5E6F000000000301 /* ContentView.swift in Sources */,
 				1A2B3C4D5E6F000000000302 /* ConnectProviderView.swift in Sources */,
+				1A2B3C4D5E6F000000000303 /* WebAuthenticator.swift in Sources */,
+				1A2B3C4D5E6F00000000031B /* PKCE.swift in Sources */,
+				1A2B3C4D5E6F00000000031C /* OAuthToken.swift in Sources */,
+				1A2B3C4D5E6F00000000031D /* OAuthConfig.swift in Sources */,
+				1A2B3C4D5E6F00000000031E /* OAuthClient.swift in Sources */,
+				1A2B3C4D5E6F00000000031F /* Credential.swift in Sources */,
 				1A2B3C4D5E6F000000000310 /* AppGroup.swift in Sources */,
 				1A2B3C4D5E6F000000000311 /* Provider.swift in Sources */,
 				1A2B3C4D5E6F000000000312 /* UsageSnapshot.swift in Sources */,
@@ -291,6 +320,11 @@
 			files = (
 				1A2B3C4D5E6F000000000400 /* UsageAIWidgetBundle.swift in Sources */,
 				1A2B3C4D5E6F000000000401 /* UsageAIWidget.swift in Sources */,
+				1A2B3C4D5E6F00000000041B /* PKCE.swift in Sources */,
+				1A2B3C4D5E6F00000000041C /* OAuthToken.swift in Sources */,
+				1A2B3C4D5E6F00000000041D /* OAuthConfig.swift in Sources */,
+				1A2B3C4D5E6F00000000041E /* OAuthClient.swift in Sources */,
+				1A2B3C4D5E6F00000000041F /* Credential.swift in Sources */,
 				1A2B3C4D5E6F000000000410 /* AppGroup.swift in Sources */,
 				1A2B3C4D5E6F000000000411 /* Provider.swift in Sources */,
 				1A2B3C4D5E6F000000000412 /* UsageSnapshot.swift in Sources */,

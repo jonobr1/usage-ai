@@ -1,38 +1,84 @@
 import Foundation
 
-/// A point-in-time reading of a provider's rate-limit / usage window.
-///
-/// Values are derived from each provider's rate-limit response headers, which
-/// describe the token budget for the current window and when that window
-/// resets — the closest public analogue to a "session" usage figure. See the
-/// README for the per-provider details and limitations.
+/// A usage cap tier. Modern subscription plans enforce several at once — a short
+/// rolling window (e.g. 5-hour) *and* a weekly window — so a provider reports one
+/// `UsageWindow` per tier it exposes.
+enum UsageWindowKind: String, Codable, CaseIterable {
+    case fiveHour
+    case weekly
+    case rateLimit   // short API rate-limit bucket (fallback when no plan window)
+
+    var shortLabel: String {
+        switch self {
+        case .fiveHour: return "5h"
+        case .weekly: return "Wk"
+        case .rateLimit: return "Rate"
+        }
+    }
+
+    var longLabel: String {
+        switch self {
+        case .fiveHour: return "5-hour"
+        case .weekly: return "Weekly"
+        case .rateLimit: return "Rate limit"
+        }
+    }
+
+    /// Ordering for display; the shorter/more-urgent window sorts first.
+    var priority: Int {
+        switch self {
+        case .fiveHour: return 0
+        case .weekly: return 1
+        case .rateLimit: return 2
+        }
+    }
+}
+
+/// A single cap tier's state.
+struct UsageWindow: Codable, Equatable, Identifiable {
+    var kind: UsageWindowKind
+    /// Fraction of the window's budget already consumed, clamped 0...1.
+    var fractionUsed: Double
+    /// When this window resets.
+    var resetsAt: Date?
+
+    var id: String { kind.rawValue }
+    var fractionRemaining: Double { max(0, min(1, 1 - fractionUsed)) }
+    var percentUsed: Int { Int((min(1, max(0, fractionUsed)) * 100).rounded()) }
+    var percentRemaining: Int { max(0, 100 - percentUsed) }
+}
+
+/// A point-in-time reading of a provider's usage across all the cap tiers it
+/// exposes.
 struct UsageSnapshot: Codable, Equatable, Identifiable {
     var provider: ProviderID
-    /// Fraction of the window's token budget already consumed, clamped 0...1.
-    var fractionUsed: Double
-    var remainingTokens: Int?
-    var limitTokens: Int?
-    /// When the current window refreshes / resets.
-    var resetsAt: Date?
+    var windows: [UsageWindow]
     var lastUpdated: Date
     /// Non-nil when the last refresh failed; the UI shows a muted ring.
     var errorMessage: String?
 
     var id: String { provider.id }
+    var hasWindow: Bool { !windows.isEmpty }
 
-    var percentUsed: Int { Int((fractionUsed * 100).rounded()) }
+    /// The window that drives the main ring: the most-depleted one (closest to
+    /// its cap), tie-broken by priority (5h before weekly).
+    var primaryWindow: UsageWindow? {
+        windows.max { lhs, rhs in
+            if lhs.fractionUsed != rhs.fractionUsed { return lhs.fractionUsed < rhs.fractionUsed }
+            return lhs.kind.priority > rhs.kind.priority
+        }
+    }
 
-    /// True when we successfully talked to the provider but it did not report a
-    /// usage window (e.g. Google). The ring is drawn in an indeterminate style.
-    var hasWindow: Bool { limitTokens != nil }
+    /// Windows in display order (5h, weekly, rate).
+    var orderedWindows: [UsageWindow] {
+        windows.sorted { $0.kind.priority < $1.kind.priority }
+    }
+
+    func window(_ kind: UsageWindowKind) -> UsageWindow? {
+        windows.first { $0.kind == kind }
+    }
 
     static func empty(_ provider: ProviderID) -> UsageSnapshot {
-        UsageSnapshot(provider: provider,
-                      fractionUsed: 0,
-                      remainingTokens: nil,
-                      limitTokens: nil,
-                      resetsAt: nil,
-                      lastUpdated: .distantPast,
-                      errorMessage: nil)
+        UsageSnapshot(provider: provider, windows: [], lastUpdated: .distantPast, errorMessage: nil)
     }
 }

@@ -1,5 +1,11 @@
 import SwiftUI
 
+/// How a provider is connected.
+enum AuthMethod {
+    case oauth
+    case apiKey
+}
+
 /// The AI services the app can connect to.
 enum ProviderID: String, CaseIterable, Codable, Identifiable {
     case openai
@@ -7,6 +13,34 @@ enum ProviderID: String, CaseIterable, Codable, Identifiable {
     case google
 
     var id: String { rawValue }
+
+    /// The connection method the app offers for this provider.
+    ///
+    /// - Anthropic uses OAuth (Claude's login flow), which is what exposes the
+    ///   5-hour session window.
+    /// - Google offers OAuth once you supply an OAuth client ID (see
+    ///   `OAuthConfig`); until then it can't be connected.
+    /// - OpenAI has no OAuth for API/usage, so it uses an API key.
+    var primaryAuth: AuthMethod {
+        switch self {
+        case .anthropic, .google: return .oauth
+        case .openai: return .apiKey
+        }
+    }
+
+    /// Whether an API key can also be used (in addition to / instead of OAuth).
+    /// All three accept a key; for OpenAI/Anthropic it yields the API
+    /// rate-limit window rather than the plan's 5h/weekly caps.
+    var supportsAPIKey: Bool { true }
+
+    /// What the ring's fill represents, for captions and accessibility.
+    var windowLabel: String {
+        switch self {
+        case .anthropic: return "5h + weekly session"
+        case .openai: return "5h + weekly (or rate limit)"
+        case .google: return "API access"
+        }
+    }
 
     var displayName: String {
         switch self {
@@ -43,6 +77,4 @@ enum ProviderID: String, CaseIterable, Codable, Identifiable {
         }
     }
 
-    /// Keychain account under which this provider's API key is stored.
-    var keychainAccount: String { "apiKey.\(rawValue)" }
 }
